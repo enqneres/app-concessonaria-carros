@@ -49,17 +49,39 @@ export default function HomePage() {
       {/* Brand Logos */}
       <section className="py-12 bg-muted/30">
         <div className="container mx-auto px-4">
-          <h3 className="text-center text-lg font-semibold text-muted-foreground mb-8">Marcas Oficiais</h3>
-          <div className="flex justify-center items-center space-x-8 md:space-x-12 opacity-60">
-            <img src="/toyota-logo.png" alt="Toyota" className="h-10" />
-            <img src="/honda-logo.png" alt="Honda" className="h-10" />
-            <img src="/volkswagen-logo.jpg" alt="Volkswagen" className="h-10" />
-            <img src="/ford-oval-logo.png" alt="Ford" className="h-10" />
-            <img src="/chevrolet-logo.png" alt="Chevrolet" className="h-10" />
-            <img src="/logo-fiat.jpg" alt="Fiat" className="h-10" />
-            <img src="/mitsu.png" alt="Mitsubishi" className="h-10" />
-            <img src="/renault.png" alt="Renault" className="h-10" />
-            <img src="/hundai.png" alt="Hyndai" className="h-10" />
+          <h3 className="text-center text-lg font-semibold text-muted-foreground mb-8">
+            Marcas Oficiais
+          </h3>
+
+          <div
+            className="
+        flex items-center space-x-8 md:space-x-12
+        overflow-x-auto
+        scrollbar-hide
+        scroll-smooth-touch
+        snap-x snap-mandatory
+        brand-scroll-padding
+      "
+            role="list"
+          >
+            {[
+              "/toyota-logo.png",
+              "/honda-logo.png",
+              "/volkswagen-logo.jpg",
+              "/ford-oval-logo.png",
+              "/chevrolet-logo.png",
+              "/logo-fiat.jpg",
+              "/mitsu.png",
+              "/renault.png",
+              "/hundai.png",
+            ].map((src) => (
+              <img
+                key={src}
+                src={src}
+                alt={src}
+                className="h-10 md:h-12 flex-shrink-0 snap-center opacity-70 hover:opacity-100 transition-opacity duration-300"
+              />
+            ))}
           </div>
         </div>
       </section>
