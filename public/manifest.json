@@ -1,0 +1,26 @@
+{
+  "name": "AutoMax - Concessionária de Carros Usados",
+  "short_name": "AutoMax",
+  "description": "Encontre o carro dos seus sonhos na AutoMax",
+  "start_url": "/",
+  "display": "standalone",
+  "background_color": "#ffffff",
+  "theme_color": "#164e63",
+  "orientation": "portrait-primary",
+  "icons": [
+    {
+      "src": "/icon-192.jpg",
+      "sizes": "192x192",
+      "type": "image/png",
+      "purpose": "maskable any"
+    },
+    {
+      "src": "/icon-512.jpg",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "maskable any"
+    }
+  ],
+  "categories": ["business", "shopping"],
+  "lang": "pt-BR"
+}
