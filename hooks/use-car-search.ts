@@ -1,224 +1,280 @@
-"use client"
+"use client";
 
-import { useState, useMemo } from "react"
+import { useState, useMemo } from "react";
 
 export interface Car {
-  id: string
-  brand: string
-  model: string
-  year: number
-  price: number
-  mileage: number
-  fuel: string
-  transmission: string
-  color: string
-  doors: number
-  engine: string
-  image: string
-  featured?: boolean
+  id: string;
+  brand: string;
+  model: string;
+  year: number;
+  price: number;
+  mileage: number;
+  fuel: string;
+  transmission: string;
+  color: string;
+  doors: number;
+  engine: string;
+  image: string;
+  images?: string[];
+  featured?: boolean;
+  features?: string[];
 }
 
 export interface SearchFilters {
-  searchTerm: string
-  brands: string[]
-  priceRange: [number, number]
-  yearRange: [number, number]
-  fuelTypes: string[]
-  transmission: string
-  sortBy: string
+  searchTerm: string;
+  brands: string[];
+  priceRange: [number, number];
+  yearRange: [number, number];
+  fuelTypes: string[];
+  transmission: string;
+  sortBy: string;
 }
 
-const mockCars: Car[] = [
+/** Exportar mockCars para ser reutilizado por outras páginas (ex: detalhes) */
+export const mockCars: Car[] = [
   {
     id: "1",
-    brand: "Honda",
-    model: "Civic",
-    year: 2020,
-    price: 89900,
-    mileage: 45000,
-    fuel: "Flex",
+    brand: "Toyota",
+    model: "Corolla 1.8 Hybrid Altis Premium",
+    year: 2025,
+    price: 202010,
+    mileage: 0,
+    fuel: "Gasolina e Elétrico",
     transmission: "CVT",
-    color: "Prata",
+    color: "Preto",
     doors: 4,
-    engine: "1.5 Turbo",
-    image: "/used-car-.jpg?height=200&width=300&query=Honda Civic 2020 silver",
+    engine: "1.8 Hybrid",
+    image: "corolla/toyota-corolla-1.png",
+    images: [
+      "/corolla/toyota-corolla-1.png",
+      "/corolla/toyota-corolla-2.png",
+      "/corolla/toyota-corolla-3.png",
+    ],
     featured: true,
+    features: [
+      "Ar-condicionado digital",
+      "Direção elétrica",
+      "Central multimídia touchscreen",
+      "Espelhamento Android Auto e Apple CarPlay",
+      "Câmera de ré",
+      "Piloto automático",
+      "Sensor de estacionamento",
+      "Bancos em couro",
+      "Faróis em LED",
+      "Airbags frontais, laterais e de cortina",
+    ],
   },
   {
     id: "2",
-    brand: "Toyota",
-    model: "Corolla",
-    year: 2021,
-    price: 95000,
-    mileage: 32000,
-    fuel: "Flex",
-    transmission: "CVT",
+    brand: "Hyundai",
+    model: "HB20 1.0 TGDI Comfort Automático",
+    year: 2023,
+    price: 82500,
+    mileage: 20000,
+    fuel: "Gasolina e Álcool",
+    transmission: "Automática",
     color: "Branco",
     doors: 4,
-    engine: "2.0",
-    image: "/used-car-.jpg?height=200&width=300&query=Toyota Corolla 2021 white",
+    engine: "1.0 TGDI",
+    image: "hyundai/hyundai-hb20-1.png",
+    images: [
+      "/hyundai/hyundai-hb20-1.png",
+      "/hyundai/hyundai-hb20-2.png",
+      "/hyundai/hyundai-hb20-3.png",
+    ],
+    featured: true,
+    features: [
+      "Ar-condicionado digital",
+      "Direção elétrica",
+      "Central multimídia touchscreen",
+      "Espelhamento Android Auto e Apple CarPlay",
+      "Câmera de ré",
+      "Piloto automático",
+      "Sensor de estacionamento",
+      "Bancos em couro",
+      "Faróis em LED",
+      "Airbags frontais, laterais e de cortina",
+    ],
   },
   {
     id: "3",
-    brand: "Volkswagen",
-    model: "Jetta",
-    year: 2019,
-    price: 75000,
-    mileage: 58000,
-    fuel: "Flex",
-    transmission: "Automático",
-    color: "Preto",
+    brand: "Fiat",
+    model: "Palio 1.0 Attractive Manual",
+    year: 2012,
+    price: 29399,
+    mileage: 75252,
+    fuel: "Gasolina e Álcool",
+    transmission: "Manual",
+    color: "Vermelho",
     doors: 4,
-    engine: "1.4 TSI",
-    image: "/used-car-.jpg?height=200&width=300&query=Volkswagen Jetta 2019 black",
+    engine: "1.0 8v",
+    image: "palio/fiat-palio-1.jpg",
+    images: [
+      "/palio/fiat-palio-1.jpg",
+      "/palio/fiat-palio-2.jpg",
+      "/palio/fiat-palio-3.jpg",
+    ],
+    featured: true,
+    features: [
+      "Ar-condicionado digital",
+      "Direção elétrica",
+      "Central multimídia touchscreen",
+      "Espelhamento Android Auto e Apple CarPlay",
+      "Câmera de ré",
+      "Piloto automático",
+      "Sensor de estacionamento",
+      "Bancos em couro",
+      "Faróis em LED",
+      "Airbags frontais, laterais e de cortina",
+    ],
   },
   {
     id: "4",
-    brand: "Ford",
-    model: "Focus",
-    year: 2018,
-    price: 65000,
-    mileage: 72000,
-    fuel: "Flex",
+    brand: "Chevrolet",
+    model: "Onix 1.0 Turbo LT Manual",
+    year: 2024,
+    price: 76590,
+    mileage: 36125,
+    fuel: "Gasolina e Álcool",
     transmission: "Manual",
-    color: "Azul",
+    color: "Branco",
     doors: 4,
-    engine: "2.0",
-    image: "/used-car-.jpg?height=200&width=300&query=Ford Focus 2018 blue",
+    engine: "1.0 Turbo",
+    image: "onix/chevrolet-onix-1.jpg",
+    images: [
+      "/onix/chevrolet-onix-1.jpg",
+      "/onix/chevrolet-onix-2.jpg",
+      "/onix/chevrolet-onix-3.jpg",
+    ],
+    featured: true,
+    features: [
+      "Ar-condicionado digital",
+      "Direção elétrica",
+      "Central multimídia touchscreen",
+      "Espelhamento Android Auto e Apple CarPlay",
+      "Câmera de ré",
+      "Piloto automático",
+      "Sensor de estacionamento",
+      "Bancos em couro",
+      "Faróis em LED",
+      "Airbags frontais, laterais e de cortina",
+    ],
   },
   {
     id: "5",
-    brand: "Chevrolet",
-    model: "Cruze",
-    year: 2020,
-    price: 82000,
-    mileage: 38000,
-    fuel: "Flex",
-    transmission: "Automático",
-    color: "Vermelho",
+    brand: "Volkswagen",
+    model: "Amarok 3.0 V6 Extreme 4Motion Automática",
+    year: 2024,
+    price: 299990,
+    mileage: 29682,
+    fuel: "Diesel",
+    transmission: "Automática",
+    color: "Prata",
     doors: 4,
-    engine: "1.4 Turbo",
-    image: "/used-car-.jpg?height=200&width=300&query=Chevrolet Cruze 2020 red",
+    engine: "3.0 V6 TDI",
+    image: "amarok/AMAROK-1.png",
+    images: [
+      "/amarok/AMAROK-1.png",
+      "/amarok/AMAROK-2.png",
+      "/amarok/AMAROK-3.png",
+    ],
     featured: true,
+    features: [
+      "Ar-condicionado digital",
+      "Direção elétrica",
+      "Central multimídia touchscreen",
+      "Espelhamento Android Auto e Apple CarPlay",
+      "Câmera de ré",
+      "Piloto automático",
+      "Sensor de estacionamento",
+      "Bancos em couro",
+      "Faróis em LED",
+      "Airbags frontais, laterais e de cortina",
+    ],
   },
-  {
-    id: "6",
-    brand: "Hyundai",
-    model: "Elantra",
-    year: 2021,
-    price: 88000,
-    mileage: 28000,
-    fuel: "Flex",
-    transmission: "Automático",
-    color: "Cinza",
-    doors: 4,
-    engine: "2.0",
-    image: "/used-car-.jpg?height=200&width=300&query=Hyundai Elantra 2021 gray",
-  },
-  {
-    id: "7",
-    brand: "Toyota",
-    model: "Camry",
-    year: 2022,
-    price: 125000,
-    mileage: 15000,
-    fuel: "Híbrido",
-    transmission: "CVT",
-    color: "Branco",
-    doors: 4,
-    engine: "2.5 Híbrido",
-    image: "/used-car-.jpg?height=200&width=300&query=Toyota Camry 2022 hybrid white",
-    featured: true,
-  },
-  {
-    id: "8",
-    brand: "BMW",
-    model: "320i",
-    year: 2019,
-    price: 145000,
-    mileage: 42000,
-    fuel: "Gasolina",
-    transmission: "Automático",
-    color: "Preto",
-    doors: 4,
-    engine: "2.0 Turbo",
-    image: "/used-car-.jpg?height=200&width=300&query=BMW 320i 2019 black",
-  },
-]
+];
 
 export function useCarSearch() {
   const [filters, setFilters] = useState<SearchFilters>({
     searchTerm: "",
     brands: [],
-    priceRange: [0, 200000],
-    yearRange: [2000, 2024],
+    priceRange: [0, 300000],
+    yearRange: [2000, 2025],
     fuelTypes: [],
     transmission: "",
     sortBy: "price-asc",
-  })
+  });
 
   const filteredCars = useMemo(() => {
-    let result = [...mockCars]
+    let result = [...mockCars];
 
     // Text search
     if (filters.searchTerm) {
-      const searchLower = filters.searchTerm.toLowerCase()
+      const searchLower = filters.searchTerm.toLowerCase();
       result = result.filter(
         (car) =>
           car.brand.toLowerCase().includes(searchLower) ||
           car.model.toLowerCase().includes(searchLower) ||
-          `${car.brand} ${car.model}`.toLowerCase().includes(searchLower),
-      )
+          `${car.brand} ${car.model}`.toLowerCase().includes(searchLower)
+      );
     }
 
     // Brand filter
     if (filters.brands.length > 0) {
-      result = result.filter((car) => filters.brands.includes(car.brand))
+      result = result.filter((car) => filters.brands.includes(car.brand));
     }
 
     // Price range filter
-    result = result.filter((car) => car.price >= filters.priceRange[0] && car.price <= filters.priceRange[1])
+    result = result.filter(
+      (car) =>
+        car.price >= filters.priceRange[0] && car.price <= filters.priceRange[1]
+    );
 
     // Year range filter
-    result = result.filter((car) => car.year >= filters.yearRange[0] && car.year <= filters.yearRange[1])
+    result = result.filter(
+      (car) =>
+        car.year >= filters.yearRange[0] && car.year <= filters.yearRange[1]
+    );
 
     // Fuel type filter
     if (filters.fuelTypes.length > 0) {
-      result = result.filter((car) => filters.fuelTypes.includes(car.fuel))
+      result = result.filter((car) => filters.fuelTypes.includes(car.fuel));
     }
 
     // Transmission filter
     if (filters.transmission) {
-      result = result.filter((car) => car.transmission === filters.transmission)
+      result = result.filter(
+        (car) => car.transmission === filters.transmission
+      );
     }
 
     // Sorting
     switch (filters.sortBy) {
       case "price-asc":
-        result.sort((a, b) => a.price - b.price)
-        break
+        result.sort((a, b) => a.price - b.price);
+        break;
       case "price-desc":
-        result.sort((a, b) => b.price - a.price)
-        break
+        result.sort((a, b) => b.price - a.price);
+        break;
       case "year-desc":
-        result.sort((a, b) => b.year - a.year)
-        break
+        result.sort((a, b) => b.year - a.year);
+        break;
       case "year-asc":
-        result.sort((a, b) => a.year - b.year)
-        break
+        result.sort((a, b) => a.year - b.year);
+        break;
       case "mileage-asc":
-        result.sort((a, b) => a.mileage - b.mileage)
-        break
+        result.sort((a, b) => a.mileage - b.mileage);
+        break;
       default:
-        break
+        break;
     }
 
-    return result
-  }, [filters])
+    return result;
+  }, [filters]);
 
   const updateFilters = (newFilters: Partial<SearchFilters>) => {
-    setFilters((prev) => ({ ...prev, ...newFilters }))
-  }
+    setFilters((prev) => ({ ...prev, ...newFilters }));
+  };
 
   const clearFilters = () => {
     setFilters({
@@ -229,8 +285,8 @@ export function useCarSearch() {
       fuelTypes: [],
       transmission: "",
       sortBy: "price-asc",
-    })
-  }
+    });
+  };
 
   return {
     cars: filteredCars,
@@ -239,5 +295,5 @@ export function useCarSearch() {
     clearFilters,
     totalCars: mockCars.length,
     filteredCount: filteredCars.length,
-  }
+  };
 }
