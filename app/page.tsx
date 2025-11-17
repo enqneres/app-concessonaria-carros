@@ -1,10 +1,15 @@
+"use client";
+
 import { Car, Shield, Users, Star } from "lucide-react"
 import { Button } from "@/components/ui/button"
 import { Card, CardContent } from "@/components/ui/card"
 import { SearchBar } from "@/components/search-bar"
 import Link from "next/link"
+import { useCarSearch } from "@/hooks/use-car-search";
+import { CarCard } from "@/components/car-card";
 
 export default function HomePage() {
+  const { cars } = useCarSearch();
   return (
     <div className="min-h-screen bg-background">
       {/* Header */}
@@ -123,34 +128,10 @@ export default function HomePage() {
               <Button variant="outline">Ver Todos os Carros</Button>
             </Link>
           </div>
+
           <div className="grid grid-cols-1 md:grid-cols-3 lg:grid-cols-4 gap-6">
-            {[1, 2, 3, 4].map((i) => (
-              <Card key={i} className="overflow-hidden hover:shadow-lg transition-shadow">
-                <CardContent className="p-0">
-                  <img
-                    src={`/used-car-.jpg?height=200&width=300&query=used car ${i} for sale`}
-                    alt={`Carro ${i}`}
-                    className="w-full h-48 object-cover"
-                  />
-                  <div className="p-4">
-                    <h4 className="font-semibold mb-2">Honda Civic 2020</h4>
-                    <p className="text-sm text-muted-foreground mb-2">1.5 Turbo CVT</p>
-                    <p className="text-2xl font-bold text-primary mb-2">R$ 89.900</p>
-                    <div className="flex items-center text-sm text-muted-foreground mb-3">
-                      <span>45.000 km</span>
-                      <span className="mx-2">•</span>
-                      <span>2020</span>
-                      <span className="mx-2">•</span>
-                      <span>Flex</span>
-                    </div>
-                    <Link href={`/carros/${i}`}>
-                      <Button className="w-full bg-transparent" variant="outline">
-                        Ver Detalhes
-                      </Button>
-                    </Link>
-                  </div>
-                </CardContent>
-              </Card>
+            {cars.slice(0, 4).map((car) => (
+              <CarCard key={car.id} {...car} />
             ))}
           </div>
         </div>

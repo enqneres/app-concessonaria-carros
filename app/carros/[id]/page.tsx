@@ -14,6 +14,7 @@ import {
   Star,
   GitCompare,
 } from "lucide-react"
+
 import { Button } from "@/components/ui/button"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { Separator } from "@/components/ui/separator"
@@ -21,71 +22,41 @@ import { FinancingCalculator } from "@/components/financing-calculator"
 import { useFavorites } from "@/hooks/use-favorites"
 import { useComparison } from "@/hooks/use-comparison"
 import Link from "next/link"
-
-// Mock car data
-const carData = {
-  id: "1",
-  brand: "Honda",
-  model: "Civic",
-  version: "1.5 Turbo CVT",
-  year: 2020,
-  price: 89900,
-  mileage: 45000,
-  fuel: "Flex",
-  transmission: "CVT",
-  color: "Prata",
-  doors: 4,
-  engine: "1.5 Turbo",
-  images: [
-    "/used-car-.jpg?height=400&width=600&query=Honda Civic 2020 silver front view",
-    "/used-car-.jpg?height=400&width=600&query=Honda Civic 2020 silver side view",
-    "/used-car-.jpg?height=400&width=600&query=Honda Civic 2020 silver interior",
-    "/used-car-.jpg?height=400&width=600&query=Honda Civic 2020 silver rear view",
-  ],
-  features: [
-    "Ar condicionado digital",
-    "Central multimídia",
-    "Câmera de ré",
-    "Sensores de estacionamento",
-    "Piloto automático",
-    "Bancos em couro",
-    "Rodas de liga leve",
-    "Faróis de LED",
-  ],
-  description:
-    "Honda Civic 2020 em excelente estado de conservação. Único dono, todas as revisões em dia na concessionária. Carro muito bem cuidado, sem detalhes.",
-  seller: {
-    name: "AutoMax Concessionária",
-    phone: "(11) 9999-9999",
-    whatsapp: "(11) 9999-9999",
-    address: "Rua das Flores, 123 - São Paulo, SP",
-  },
-}
+import { mockCars } from "@/hooks/use-car-search"
 
 export default function CarDetailPage({ params }: { params: { id: string } }) {
   const { toggleFavorite, isFavorite } = useFavorites()
   const { addToComparison, isInComparison } = useComparison()
 
+  /** Buscar carro pelo ID */
+  const car = mockCars.find((c) => c.id === params.id)
+
+  if (!car) {
+    return (
+      <div className="p-10 text-center text-xl">
+        Carro não encontrado 😕
+      </div>
+    )
+  }
+
   const handleWhatsApp = () => {
-    const message = `Olá! Tenho interesse no ${carData.brand} ${carData.model} ${carData.version} ${carData.year} por R$ ${carData.price.toLocaleString("pt-BR")}. Poderia me dar mais informações?`
+    const message = `Olá! Tenho interesse no ${car.brand} ${car.model} ${car.year} por R$ ${car.price.toLocaleString(
+      "pt-BR"
+    )}.`
     const whatsappUrl = `https://wa.me/5511999999999?text=${encodeURIComponent(message)}`
     window.open(whatsappUrl, "_blank")
   }
 
   const handleShare = async () => {
     if (navigator.share) {
-      try {
-        await navigator.share({
-          title: `${carData.brand} ${carData.model} ${carData.year}`,
-          text: `Confira este ${carData.brand} ${carData.model} por R$ ${carData.price.toLocaleString("pt-BR")}`,
-          url: window.location.href,
-        })
-      } catch (error) {
-        console.log("Erro ao compartilhar:", error)
-      }
+      await navigator.share({
+        title: `${car.brand} ${car.model}`,
+        text: `Veja este veículo: ${car.brand} ${car.model}`,
+        url: window.location.href,
+      })
     } else {
       navigator.clipboard.writeText(window.location.href)
-      alert("Link copiado para a área de transferência!")
+      alert("Link copiado!")
     }
   }
 
@@ -127,7 +98,7 @@ export default function CarDetailPage({ params }: { params: { id: string } }) {
           </Link>
           <span className="mx-2">/</span>
           <span>
-            {carData.brand} {carData.model}
+            {car.brand} {car.model}
           </span>
         </nav>
 
@@ -138,40 +109,39 @@ export default function CarDetailPage({ params }: { params: { id: string } }) {
             <div className="flex flex-col md:flex-row md:items-center justify-between">
               <div>
                 <h1 className="text-3xl font-serif font-bold mb-2">
-                  {carData.brand} {carData.model} {carData.version}
+                  {car.brand} {car.model}
                 </h1>
                 <div className="flex items-center gap-4 text-muted-foreground">
                   <span className="flex items-center gap-1">
                     <Calendar className="w-4 h-4" />
-                    {carData.year}
+                    {car.year}
                   </span>
                   <span className="flex items-center gap-1">
                     <Gauge className="w-4 h-4" />
-                    {carData.mileage.toLocaleString("pt-BR")} km
+                    {car.mileage.toLocaleString("pt-BR")} km
                   </span>
                   <span className="flex items-center gap-1">
                     <Fuel className="w-4 h-4" />
-                    {carData.fuel}
+                    {car.fuel}
                   </span>
                 </div>
               </div>
+
               <div className="mt-4 md:mt-0 text-right">
-                <div className="text-3xl font-bold text-primary mb-2">R$ {carData.price.toLocaleString("pt-BR")}</div>
+                <div className="text-3xl font-bold text-primary mb-2">R$ {car.price.toLocaleString("pt-BR")}</div>
+
                 <div className="flex gap-2">
-                  <Button variant="outline" size="sm" onClick={() => toggleFavorite(carData.id)}>
-                    <Heart className={`w-4 h-4 mr-2 ${isFavorite(carData.id) ? "fill-red-500 text-red-500" : ""}`} />
-                    {isFavorite(carData.id) ? "Favoritado" : "Favoritar"}
+                  <Button variant="outline" onClick={() => toggleFavorite(car.id)}>
+                    <Heart className={`w-4 h-4 mr-2 ${isFavorite(car.id) ? "fill-red-500 text-red-500" : ""}`} />
+                    {isFavorite(car.id) ? "Favoritado" : "Favoritar"}
                   </Button>
-                  <Button
-                    variant="outline"
-                    size="sm"
-                    onClick={() => addToComparison(carData.id)}
-                    disabled={isInComparison(carData.id)}
-                  >
-                    <GitCompare className={`w-4 h-4 mr-2 ${isInComparison(carData.id) ? "text-cyan-600" : ""}`} />
-                    {isInComparison(carData.id) ? "Na Comparação" : "Comparar"}
+
+                  <Button variant="outline" onClick={() => addToComparison(car.id)} disabled={isInComparison(car.id)}>
+                    <GitCompare className={`w-4 h-4 mr-2 ${isInComparison(car.id) ? "text-cyan-600" : ""}`} />
+                    {isInComparison(car.id) ? "Na Comparação" : "Comparar"}
                   </Button>
-                  <Button variant="outline" size="sm" onClick={handleShare}>
+
+                  <Button variant="outline" onClick={handleShare}>
                     <Share2 className="w-4 h-4 mr-2" />
                     Compartilhar
                   </Button>
@@ -183,15 +153,18 @@ export default function CarDetailPage({ params }: { params: { id: string } }) {
             <Card>
               <CardContent className="p-0">
                 <div className="grid grid-cols-2 gap-2">
+                  {/* Foto principal */}
                   <img
-                    src={carData.images[0] || "/placeholder.svg"}
+                    src={car.images?.[0] || car.image}
                     alt="Foto principal"
                     className="col-span-2 w-full h-80 object-cover rounded-t-lg"
                   />
-                  {carData.images.slice(1, 4).map((image, index) => (
+
+                  {/* Miniaturas */}
+                  {car.images?.slice(1)?.map((image, index) => (
                     <img
                       key={index}
-                      src={image || "/placeholder.svg"}
+                      src={image}
                       alt={`Foto ${index + 2}`}
                       className="w-full h-32 object-cover"
                     />
@@ -207,61 +180,39 @@ export default function CarDetailPage({ params }: { params: { id: string } }) {
               </CardHeader>
               <CardContent>
                 <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
-                  <div>
-                    <span className="text-sm text-muted-foreground">Marca</span>
-                    <p className="font-medium">{carData.brand}</p>
-                  </div>
-                  <div>
-                    <span className="text-sm text-muted-foreground">Modelo</span>
-                    <p className="font-medium">{carData.model}</p>
-                  </div>
-                  <div>
-                    <span className="text-sm text-muted-foreground">Ano</span>
-                    <p className="font-medium">{carData.year}</p>
-                  </div>
-                  <div>
-                    <span className="text-sm text-muted-foreground">Cor</span>
-                    <p className="font-medium">{carData.color}</p>
-                  </div>
-                  <div>
-                    <span className="text-sm text-muted-foreground">Combustível</span>
-                    <p className="font-medium">{carData.fuel}</p>
-                  </div>
-                  <div>
-                    <span className="text-sm text-muted-foreground">Câmbio</span>
-                    <p className="font-medium">{carData.transmission}</p>
-                  </div>
-                  <div>
-                    <span className="text-sm text-muted-foreground">Motor</span>
-                    <p className="font-medium">{carData.engine}</p>
-                  </div>
-                  <div>
-                    <span className="text-sm text-muted-foreground">Portas</span>
-                    <p className="font-medium">{carData.doors}</p>
-                  </div>
+                  <Detail label="Marca" value={car.brand} />
+                  <Detail label="Modelo" value={car.model} />
+                  <Detail label="Ano" value={car.year} />
+                  <Detail label="Cor" value={car.color} />
+                  <Detail label="Combustível" value={car.fuel} />
+                  <Detail label="Câmbio" value={car.transmission} />
+                  <Detail label="Motor" value={car.engine} />
+                  <Detail label="Portas" value={car.doors} />
                 </div>
               </CardContent>
             </Card>
 
             {/* Features */}
-            <Card>
-              <CardHeader>
-                <CardTitle>Equipamentos e Opcionais</CardTitle>
-              </CardHeader>
-              <CardContent>
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-2">
-                  {carData.features.map((feature, index) => (
-                    <div key={index} className="flex items-center gap-2">
-                      <div className="w-2 h-2 bg-primary rounded-full" />
-                      <span className="text-sm">{feature}</span>
-                    </div>
-                  ))}
-                </div>
-              </CardContent>
-            </Card>
+            {car.features && (
+              <Card>
+                <CardHeader>
+                  <CardTitle>Equipamentos e Opcionais</CardTitle>
+                </CardHeader>
+                <CardContent>
+                  <ul className="grid grid-cols-1 md:grid-cols-2 gap-2">
+                    {car.features.map((item, index) => (
+                      <li key={index} className="flex items-center gap-2">
+                        <span className="w-2 h-2 bg-primary rounded-full"></span>
+                        {item}
+                      </li>
+                    ))}
+                  </ul>
+                </CardContent>
+              </Card>
+            )}
 
             {/* Financing Calculator */}
-            <FinancingCalculator carPrice={carData.price} />
+            <FinancingCalculator carPrice={car.price} />
           </div>
 
           {/* Sidebar */}
@@ -271,49 +222,15 @@ export default function CarDetailPage({ params }: { params: { id: string } }) {
               <CardHeader>
                 <CardTitle>Entre em Contato</CardTitle>
               </CardHeader>
-              <CardContent className="space-y-4">
-                <div>
-                  <h4 className="font-medium mb-2">{carData.seller.name}</h4>
-                  <div className="flex items-center gap-2 text-sm text-muted-foreground mb-2">
-                    <MapPin className="w-4 h-4" />
-                    {carData.seller.address}
-                  </div>
-                </div>
-
-                <Separator />
-
-                <div className="space-y-3">
-                  <Button className="w-full bg-green-600 hover:bg-green-700" onClick={handleWhatsApp}>
-                    <MessageCircle className="w-4 h-4 mr-2" />
-                    WhatsApp
-                  </Button>
-                  <Button variant="outline" className="w-full bg-transparent">
-                    <Phone className="w-4 h-4 mr-2" />
-                    Ligar: {carData.seller.phone}
-                  </Button>
-                </div>
-              </CardContent>
-            </Card>
-
-            {/* Financing */}
-            <Card>
-              <CardHeader>
-                <CardTitle>Financiamento</CardTitle>
-              </CardHeader>
-              <CardContent>
-                <div className="space-y-3">
-                  <div className="flex justify-between">
-                    <span className="text-sm">Entrada (30%)</span>
-                    <span className="font-medium">R$ 26.970</span>
-                  </div>
-                  <div className="flex justify-between">
-                    <span className="text-sm">48x de</span>
-                    <span className="font-medium text-primary">R$ 1.456</span>
-                  </div>
-                  <Button variant="outline" className="w-full bg-transparent">
-                    Simular Financiamento
-                  </Button>
-                </div>
+              <CardContent className="space-y-3">
+                <Button className="w-full bg-green-600" onClick={handleWhatsApp}>
+                  <MessageCircle className="w-4 h-4 mr-2" />
+                  WhatsApp
+                </Button>
+                <Button variant="outline" className="w-full bg-transparent">
+                  <Phone className="w-4 h-4 mr-2" />
+                  Ligar
+                </Button>
               </CardContent>
             </Card>
 
@@ -326,25 +243,23 @@ export default function CarDetailPage({ params }: { params: { id: string } }) {
                 </CardTitle>
               </CardHeader>
               <CardContent>
-                <div className="space-y-2 text-sm">
-                  <div className="flex items-center gap-2">
-                    <Star className="w-4 h-4 text-accent" />
-                    <span>6 meses de garantia</span>
-                  </div>
-                  <div className="flex items-center gap-2">
-                    <Star className="w-4 h-4 text-accent" />
-                    <span>Inspeção de 150 pontos</span>
-                  </div>
-                  <div className="flex items-center gap-2">
-                    <Star className="w-4 h-4 text-accent" />
-                    <span>Documentação em dia</span>
-                  </div>
-                </div>
+                <p className="text-sm text-muted-foreground">
+                  Garantia de 6 meses • Revisões em dia • Inspeção completa
+                </p>
               </CardContent>
             </Card>
           </div>
         </div>
       </div>
+    </div>
+  )
+}
+
+function Detail({ label, value }: { label: string; value: any }) {
+  return (
+    <div>
+      <span className="text-sm text-muted-foreground">{label}</span>
+      <p className="font-medium">{value}</p>
     </div>
   )
 }
